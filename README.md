@@ -5,9 +5,7 @@ corhex is an R package for generating correlation hexagon plots. It helps you qu
 # Installation
 
 ```
-# Install devtools
-install.packages("devtools")
-
+if(!require(devtools)){install.packages("devtools")}
 # Install corHex package from GitHub
 devtools::install_github("Chuanping-Zhao/corhex")
 ```
@@ -35,6 +33,7 @@ facetplotsize=c(3*3,2.5*3),#width height
 
 # result
 
-![image](https://github.com/user-attachments/assets/c0c8f54b-21ec-42ed-bb10-47702ad3e3ce)
+![image](https://github.com/user-attachments/assets/9a75bb03-9bed-454a-a193-e2e0cf107946)
+
 
 
