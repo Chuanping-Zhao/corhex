@@ -1,0 +1,21 @@
+Package: corhex
+Title: Correlation HexPlot Package
+Version: 0.1.0
+Authors@R: 
+    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: A package for generating hexagon correlation plots from data.
+License: MIT
+Imports: 
+    dplyr,
+    export,
+    ggplot2,
+    ggtext,
+    grid,
+    patchwork,
+    purrr,
+    reshape2,
+    tidyr
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
