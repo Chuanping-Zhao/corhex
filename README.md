@@ -13,7 +13,8 @@ devtools::install_github("Chuanping-Zhao/corhex")
 
 dtplot:
 
-![image](https://github.com/user-attachments/assets/57e4b70d-a923-4aef-ac8a-1302e3d50f7e)
+![image](https://github.com/user-attachments/assets/883b168d-2fa6-4a70-8a72-b15601be5c09)
+
 
 
 
