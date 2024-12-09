@@ -7,6 +7,8 @@ Authors@R:
 Description: A package for generating hexagon correlation plots from data.
 License: MIT
 Imports: 
+    MASS,
+    spatstat.geom,
     dplyr,
     export,
     ggplot2,
@@ -19,3 +21,4 @@ Imports:
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
+LazyData: true
