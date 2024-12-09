@@ -11,7 +11,12 @@ cor_hex(
   savefile = "outputfile",
   singleplotsize = c(3, 2.5),
   facetplotsize = c(3 * 3, 2.5 * 3),
-  bin = 50
+  bin = 50,
+  logL = TRUE,
+  plottype = c("hex", "point")[2],
+  pointcolor = c("A", "B", "C", "D", "E")[3],
+  pointsize = 0.5,
+  kde2d.n = 50
 )
 }
 \arguments{
@@ -28,29 +33,60 @@ cor_hex(
 \item{facetplotsize}{Size of facet plot in inches (width, height). Default is c(9, 7.5).}
 
 \item{bin}{Number of bins for hex plot. Default is 50.}
+
+\item{logL}{Logical. Whether to log-transform the data (log10). Default is TRUE.}
+
+\item{plottype}{Character. Type of plot to generate: "hex" for hexagon plots, "point" for density point plots. Default is "point".}
+
+\item{pointcolor}{Character. Color scheme for density point plots. Options include "A", "B", "C", "D", "E". Default is "C".}
+
+\item{pointsize}{Numeric. Size of points in density point plots. Default is 0.5.}
+
+\item{kde2d.n}{Numeric. Grid size for kernel density estimation using \code{MASS::kde2d}. Default is 50.}
 }
 \value{
 A list containing two elements:
 \itemize{
-\item facet_plt: Facet-wrapped correlation hexagon plot.
-\item singleplot: List of individual correlation hexagon plots.
+\item facet_plt: Facet-wrapped plot (hexagon or point density).
+\item singleplot: List of individual plots (hexagon or point density).
 }
 }
 \description{
 The function calculates pairwise correlations between numeric columns in the input data frame \code{dt},
-and generates hexagon plots showing these correlations. It also includes facet-wrapped plots for each
-unique pair of variables, with correlation coefficients annotated on the plots.
+and generates either hexagon plots or density-based point plots to visualize these correlations.
+Facet-wrapped plots are created for each unique pair of variables, with correlation coefficients annotated.
+It also supports kernel density estimation for creating density-based point plots.
 }
 \details{
-This function generates correlation hexagon plots for a given data frame.
+This function generates correlation hexagon or density point plots for a given data frame,
+including pairwise correlation calculations and visualization.
+
+The function uses the following key dependencies:
+\itemize{
+\item \strong{MASS::kde2d}: Performs 2D kernel density estimation for density-based point plots.
+\item \strong{spatstat.geom::as.im} and \strong{spatstat.geom::interp.im}: Converts the output of \code{MASS::kde2d} into an interpolated spatial image for density calculation.
+\item \strong{ggplot2}: Creates the hexagon or point density plots and handles all visualization components.
+\item \strong{dplyr} and \strong{tidyr}: Perform data wrangling, including pivoting and filtering.
+\item \strong{reshape2::melt}: Converts correlation matrices into long format for easier processing.
+\item \strong{purrr}: Used to map over combinations of data for generating individual plots.
+}
 }
 \examples{
-dt <- data.frame(
-  protein = c("A", "B", "C"),
-  var1 = c(1, 2, 3),
-  var2 = c(4, 5, 6),
-  var3 = c(7, 8, 9)
-)
-cor_hex(dt)
+# Load the demo data included in the package
+data("demo", package = "corhex")
+
+# Run the cor_hex function on the demo data
+cor_hex(dt=demo,
+id.col="Index",
+cor.method=c("pearson", "kendall", "spearman")[3],
+savefile="outputfile",
+singleplotsize=c(3,2.5),
+facetplotsize=c(3*3,2.5*3),
+bin=50,
+logL=FALSE,
+pointcolor=c("A","B","C","D","E")[3],
+pointsize=0.5,
+kde2d.n=50,
+plottype=c("hex","point")[2])
 
 }
