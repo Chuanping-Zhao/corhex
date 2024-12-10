@@ -8,6 +8,11 @@ Description: A package for generating hexagon correlation plots from data.
 License: MIT
 Imports: 
     MASS,
+    GGally,
+    tibble,
+    stats,
+    pracma,
+    scales,
     spatstat.geom,
     dplyr,
     export,
