@@ -6,7 +6,7 @@
 \usage{
 cor_hex(
   dt = dtplot,
-  id.col = "protein",
+  id.col = "Index",
   cor.method = c("pearson", "kendall", "spearman")[1],
   savefile = "outputfile",
   singleplotsize = c(3, 2.5),
@@ -16,7 +16,10 @@ cor_hex(
   plottype = c("hex", "point")[2],
   pointcolor = c("A", "B", "C", "D", "E")[3],
   pointsize = 0.5,
-  kde2d.n = 50
+  kde2d.n = 50,
+  smooth.color = "red",
+  smooth.width = 0.8,
+  savePPT = FALSE
 )
 }
 \arguments{
@@ -43,6 +46,12 @@ cor_hex(
 \item{pointsize}{Numeric. Size of points in density point plots. Default is 0.5.}
 
 \item{kde2d.n}{Numeric. Grid size for kernel density estimation using \code{MASS::kde2d}. Default is 50.}
+
+\item{smooth.color}{Color of the smoothing line in scatter and hexbin plots. Default is "blue".}
+
+\item{smooth.width}{Width of the smoothing line in scatter and hexbin plots. Default is \code{0.8}.}
+
+\item{savePPT}{Logical, whether to save the plot as a PowerPoint file. Default is \code{FALSE}.}
 }
 \value{
 A list containing two elements:

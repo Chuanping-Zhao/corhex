@@ -21,6 +21,9 @@
 #' @param pointcolor Character. Color scheme for density point plots. Options include "A", "B", "C", "D", "E". Default is "C".
 #' @param pointsize Numeric. Size of points in density point plots. Default is 0.5.
 #' @param kde2d.n Numeric. Grid size for kernel density estimation using `MASS::kde2d`. Default is 50.
+#' @param smooth.color Color of the smoothing line in scatter and hexbin plots. Default is "blue".
+#' @param smooth.width Width of the smoothing line in scatter and hexbin plots. Default is `0.8`.
+#' @param savePPT Logical, whether to save the plot as a PowerPoint file. Default is `FALSE`.
 #'
 #' @return A list containing two elements:
 #'   - facet_plt: Facet-wrapped plot (hexagon or point density).
@@ -68,7 +71,7 @@
 #'
 #' @export
 cor_hex=function(dt=dtplot,
-                 id.col="protein",
+                 id.col="Index",
                  cor.method=c("pearson", "kendall", "spearman")[1],
                  savefile="outputfile",
                  singleplotsize=c(3,2.5),#width height
@@ -78,7 +81,10 @@ cor_hex=function(dt=dtplot,
                  plottype=c("hex","point")[2],
                  pointcolor=c("A","B","C","D","E")[3],
                  pointsize=0.5,
-                 kde2d.n=50
+                 kde2d.n=50,
+                 smooth.color="red",
+                 smooth.width=0.8,
+                 savePPT=FALSE
 ){
 
 
@@ -146,6 +152,8 @@ switch (plottype,
 
     plt=ggplot2::ggplot(dt_filtered, ggplot2::aes(x = x, y = y)) +
       ggplot2::geom_hex(bins = bin) +
+      ggplot2::geom_smooth(color=smooth.color,linewidth=smooth.width,method="lm",formula = y ~ x,se = TRUE, level = 0.95)+  #     smooth.color="blue"  smooth.width=0.8 =========
+      #ggpubr::stat_cor(method = cor.method, ggplot2::aes(x =x, y =y),size=2.5,color="#9A2631")+
       ggplot2::scale_fill_viridis_c(option = "viridis", guide = "none") +
       ggplot2::theme_bw() +
       ggplot2::theme(
@@ -188,6 +196,7 @@ switch (plottype,
       dplyr::group_split(compars) |>
       purrr::map(~ ggplot2::ggplot(.x, ggplot2::aes(x = x, y = y)) +
                    ggplot2::geom_hex(bins = bin) +
+                   ggplot2::geom_smooth(color=smooth.color,linewidth=smooth.width,method="lm",formula = y ~ x,se = TRUE, level = 0.95)+
                    ggplot2::scale_fill_viridis_c(option = "viridis", guide = "none") +
                    ggplot2::theme_bw() +
                    ggplot2::theme(
@@ -235,6 +244,7 @@ switch (plottype,
 
     plt=ggplot2::ggplot(dt_point_plot, ggplot2::aes(x = x, y = y,color=density)) +
       ggplot2::geom_point(alpha = 0.8, size = pointsize)+
+      ggplot2::geom_smooth(color=smooth.color,linewidth=smooth.width,method="lm",formula = y ~ x,se = TRUE, level = 0.95)+
       ggplot2::scale_color_viridis_c(option = pointcolor, guide = "none") +
       ggplot2::theme_bw() +
       ggplot2::theme(
@@ -275,6 +285,7 @@ switch (plottype,
       dplyr::group_split(compars) |>
       purrr::map(~ ggplot2::ggplot(.x, ggplot2::aes(x = x, y = y,color=density)) +
                    ggplot2::geom_point(alpha = 0.8, size = pointsize) +
+                   ggplot2::geom_smooth(color=smooth.color,linewidth=smooth.width,method="lm",formula = y ~ x,se = TRUE, level = 0.95)+
                    ggplot2::scale_color_viridis_c(option = pointcolor, guide = "none") +
                    ggplot2::theme_bw() +
                    ggplot2::theme(
@@ -347,19 +358,25 @@ switch (plottype,
   purrr::walk2(plots, plot_names, ~ {
     ggplot2::ggsave(filename = paste0(savepath,"/",.y, ".png"), plot = .x, width = singleplotsize[1], height = singleplotsize[2], dpi = 300)
     ggplot2::ggsave(filename = paste0(savepath,"/",.y, ".pdf"), plot = .x, width = singleplotsize[1], height = singleplotsize[2],device = "pdf")
-    export::graph2ppt(x =.x, file =paste0(savepath,"/",.y, ".ppt"),
-                      vector.graphic = TRUE,width = singleplotsize[1], height = singleplotsize[2], aspectr = sqrt(2), append = FALSE)
+    if (savePPT) {
+      export::graph2ppt(x =.x, file =paste0(savepath,"/",.y, ".ppt"),
+                        vector.graphic = TRUE, width = singleplotsize[1], height = singleplotsize[2], aspectr = sqrt(2), append = FALSE)
+    }
   })
 
-  .save_zcp <- function(Fig,FigName,outputfile,widths,heights){
+
+  .save_zcp <- function(Fig,FigName,outputfile,widths,heights,ppt=FALSE){
     Filepaths=paste0(outputfile,"/",FigName,c(".pdf",".png",".ppt"))
     ggplot2::ggsave(Filepaths[1], width =widths, plot=Fig,height = heights,device = "pdf")
     ggplot2::ggsave(Filepaths[2], width =widths,  plot=Fig,height = heights,device = "png")
-    export::graph2ppt(x = Fig, file =Filepaths[3],
-                      vector.graphic = TRUE, width =widths, height =heights, aspectr = sqrt(2), append = FALSE)
+
+    if (ppt) {
+      export::graph2ppt(x = Fig, file =Filepaths[3],
+                        vector.graphic = TRUE, width =widths, height =heights, aspectr = sqrt(2), append = FALSE)
+    }
   }
 
-  .save_zcp(Fig =plt,FigName = "facetwrapPlot_cor",outputfile =savepath,widths = facetplotsize[1],heights = facetplotsize[2])
+  .save_zcp(Fig =plt,FigName = "facetwrapPlot_cor",outputfile =savepath,widths = facetplotsize[1],heights = facetplotsize[2],ppt=savePPT)
 
   result=list(facet_plt=plt,singleplot=plots)
   return(result)

@@ -15,7 +15,11 @@ corpairs(
   plottype = c("hex", "point")[2],
   pointcolor = c("A", "B", "C", "D", "E")[3],
   pointsize = 1,
-  kde2d.n = 50
+  kde2d.n = 50,
+  smooth.color = "blue",
+  smooth.width = 0.8,
+  savePPT = FALSE,
+  density.color = "#26828E"
 )
 }
 \arguments{
@@ -27,7 +31,7 @@ corpairs(
 
 \item{savefile}{The directory where output plots will be saved. Default is "outputfile".}
 
-\item{corpairplotsize}{A numeric vector of length 2 specifying the width and height of the plot in inches. Default is \code{c(9, 7.5)}.}
+\item{corpairplotsize}{A numeric vector of length 2 specifying the width and height of the plot in inches. Default is \code{c(6, 5)}.}
 
 \item{bin}{Number of bins for hexbin plots. Default is \code{50}.}
 
@@ -40,6 +44,14 @@ corpairs(
 \item{pointsize}{Size of points in scatter plots. Default is \code{1}.}
 
 \item{kde2d.n}{Grid size for \code{MASS::kde2d} density calculation. Default is \code{50}.}
+
+\item{smooth.color}{Color of the smoothing line in scatter and hexbin plots. Default is "blue".}
+
+\item{smooth.width}{Width of the smoothing line in scatter and hexbin plots. Default is \code{0.8}.}
+
+\item{savePPT}{Logical, whether to save the plot as a PowerPoint file. Default is \code{FALSE}.}
+
+\item{density.color}{Fill color for the density plot on the diagonal. Default is "#26828E".}
 }
 \value{
 A \code{GGally::ggpairs} plot object.
@@ -55,7 +67,7 @@ corpairs(dt=demo,
 id.col="Index",
 cor.method=c("pearson", "kendall", "spearman")[3],
 savefile="outputfile",
-corpairplotsize=c(3*3,2.5*3),#width height
+corpairplotsize=c(3*2,2.5*2),#width height
 bin=50,
 logL=FALSE,
 plottype=c("hex","point")[2],

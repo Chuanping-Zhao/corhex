@@ -12,6 +12,11 @@
 #' @param pointcolor A vector of color palette names for scatter plots, with a default of "C".
 #' @param pointsize Size of points in scatter plots. Default is `1`.
 #' @param kde2d.n Grid size for `MASS::kde2d` density calculation. Default is `50`.
+#' @param smooth.color Color of the smoothing line in scatter and hexbin plots. Default is "blue".
+#' @param smooth.width Width of the smoothing line in scatter and hexbin plots. Default is `0.8`.
+#' @param savePPT Logical, whether to save the plot as a PowerPoint file. Default is `FALSE`.
+#' @param density.color Fill color for the density plot on the diagonal. Default is "#26828E".
+#'
 #' @return A `GGally::ggpairs` plot object.
 #' @examples
 #' # Load the demo data included in the package
@@ -47,7 +52,12 @@ corpairs=function(dt=demo,
                   plottype=c("hex","point")[2],
                   pointcolor=c("A","B","C","D","E")[3],
                   pointsize=1,
-                  kde2d.n=50){
+                  kde2d.n=50,
+                  smooth.color="blue",
+                  smooth.width=0.8,
+                  savePPT=FALSE,
+                  density.color="#26828E"
+                  ){
 
 
   dt=dt |> dplyr::select(any_of(id.col),dplyr::everything())
@@ -71,6 +81,7 @@ corpairs=function(dt=demo,
   geomhex <- function(data, mapping,binss, ...) {
     ggplot2::ggplot(data = data, mapping = mapping) +
       ggplot2::geom_hex(bins = binss) +
+      ggplot2::geom_smooth(color=smooth.color,linewidth=smooth.width,method="lm",formula = y ~ x,se = TRUE, level = 0.95)+#
       ggplot2::scale_fill_viridis_c(option = "viridis", guide = "none") +
       ggplot2::theme_bw() +
       ggplot2::theme(
@@ -131,6 +142,7 @@ corpairs=function(dt=demo,
 
     ggplot2::ggplot(data, mapping) +
       ggplot2::geom_point(ggplot2::aes(color = density), alpha = 0.8, size = pointsize) +  # 动态大小
+      ggplot2::geom_smooth(color=smooth.color,linewidth=smooth.width,method="lm",formula = y ~ x,se = TRUE, level = 0.95,alpha=0.8)+#
       ggplot2::scale_color_viridis_c(option = pointcolor, guide = "none") +               # 动态调色板
       ggplot2::theme_bw() +
       ggplot2::theme(
@@ -156,9 +168,9 @@ corpairs=function(dt=demo,
 
 
   #diag function
-  custom_densityDiag <- function(data, mapping, ...) {
+  custom_densityDiag <- function(data, mapping,fill.color = "#26828E", ...) {
     ggplot2::ggplot(data = data, mapping = mapping) +
-      ggplot2::geom_density(alpha = 0.8, fill = "#26828E", ...) +
+      ggplot2::geom_density(alpha = 0.8, fill = fill.color, ...) +
       ggplot2::theme_minimal() +
       ggplot2::theme(
         plot.background = ggplot2::element_rect(fill = "white", color = "white"),
@@ -242,7 +254,9 @@ corpairs=function(dt=demo,
           }
         }),
         lower = list(continuous = GGally::wrap(geomhex, binss = bin)),
-        diag = list(continuous = custom_densityDiag)
+        diag = list(continuous = function(data, mapping, ...) {
+          custom_densityDiag(data, mapping, fill.color = density.color) # density.color="red"
+        })
       )
 
     },
@@ -264,7 +278,9 @@ corpairs=function(dt=demo,
           }
         }),
         lower = list(continuous = GGally::wrap(geompoint_density)),
-        diag = list(continuous = custom_densityDiag)
+        diag = list(continuous = function(data, mapping, ...) {
+          custom_densityDiag(data, mapping, fill.color = density.color) # density.color="red"
+        })
       )
 
 
@@ -283,15 +299,20 @@ corpairs=function(dt=demo,
     }
   }
 
-  .save_zcp <- function(Fig,FigName,outputfile,widths,heights){
+  .save_zcp <- function(Fig,FigName,outputfile,widths,heights,ppt=FALSE){
     Filepaths=paste0(outputfile,"/",FigName,c(".pdf",".png",".ppt"))
     ggplot2::ggsave(Filepaths[1], width =widths, plot=Fig,height = heights,device = "pdf")
     ggplot2::ggsave(Filepaths[2], width =widths,  plot=Fig,height = heights,device = "png")
-    export::graph2ppt(x = Fig, file =Filepaths[3],
-                      vector.graphic = TRUE, width =widths, height =heights, aspectr = sqrt(2), append = FALSE)
+
+    if (ppt) {
+      export::graph2ppt(x = Fig, file =Filepaths[3],
+                        vector.graphic = TRUE, width =widths, height =heights, aspectr = sqrt(2), append = FALSE)
+    }
+
+
   }
 
-  .save_zcp(Fig =ggpairs_plot,FigName = "pairsCorplot",outputfile =savepath,widths = corpairplotsize[1],heights = corpairplotsize[2])
+  .save_zcp(Fig =ggpairs_plot,FigName = "pairsCorplot",outputfile =savepath,widths = corpairplotsize[1],heights = corpairplotsize[2],ppt=savePPT)
 
   return(ggpairs_plot)
 
