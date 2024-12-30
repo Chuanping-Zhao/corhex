@@ -19,7 +19,11 @@ corpairs(
   smooth.color = "blue",
   smooth.width = 0.8,
   savePPT = FALSE,
-  density.color = "#26828E"
+  density.color = "#26828E",
+  alpha.density = 0.8,
+  alpha.point = 0.8,
+  sub.figure.label = c("show", "none", "internal")[2],
+  label.position = c("both", "x", "y")[1]
 )
 }
 \arguments{
@@ -52,6 +56,14 @@ corpairs(
 \item{savePPT}{Logical, whether to save the plot as a PowerPoint file. Default is \code{FALSE}.}
 
 \item{density.color}{Fill color for the density plot on the diagonal. Default is "#26828E".}
+
+\item{alpha.density}{The parameters to control the color transparency of density plots.}
+
+\item{alpha.point}{The parameters to control the color transparency of scatter plots.}
+
+\item{sub.figure.label}{either "show" to display subFigure, "internal" for labels in the diagonal plots, or "none" for no axis labels.}
+
+\item{label.position}{By default, the labels are displayed on the top and right of the plot. If "x", the top labels will be displayed to the bottom. If "y", the right-hand side labels will be displayed to the left. Can also be set to "both".}
 }
 \value{
 A \code{GGally::ggpairs} plot object.

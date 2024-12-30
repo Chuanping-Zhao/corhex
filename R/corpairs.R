@@ -16,6 +16,10 @@
 #' @param smooth.width Width of the smoothing line in scatter and hexbin plots. Default is `0.8`.
 #' @param savePPT Logical, whether to save the plot as a PowerPoint file. Default is `FALSE`.
 #' @param density.color Fill color for the density plot on the diagonal. Default is "#26828E".
+#' @param label.position By default, the labels are displayed on the top and right of the plot. If "x", the top labels will be displayed to the bottom. If "y", the right-hand side labels will be displayed to the left. Can also be set to "both".
+#' @param sub.figure.label 	either "show" to display subFigure, "internal" for labels in the diagonal plots, or "none" for no axis labels.
+#' @param alpha.density The parameters to control the color transparency of density plots.
+#' @param alpha.point The parameters to control the color transparency of scatter plots.
 #'
 #' @return A `GGally::ggpairs` plot object.
 #' @examples
@@ -56,7 +60,11 @@ corpairs=function(dt=demo,
                   smooth.color="blue",
                   smooth.width=0.8,
                   savePPT=FALSE,
-                  density.color="#26828E"
+                  density.color="#26828E",
+                  alpha.density=0.8,
+                  alpha.point=0.8,
+                  sub.figure.label=c("show","none","internal")[2],
+                  label.position=c("both","x","y")[1]
                   ){
 
 
@@ -80,8 +88,9 @@ corpairs=function(dt=demo,
   #hex function
   geomhex <- function(data, mapping,binss, ...) {
     ggplot2::ggplot(data = data, mapping = mapping) +
-      ggplot2::geom_hex(bins = binss) +
       ggplot2::geom_smooth(color=smooth.color,linewidth=smooth.width,method="lm",formula = y ~ x,se = TRUE, level = 0.95)+#
+      ggplot2::geom_hex(bins = binss) +
+
       ggplot2::scale_fill_viridis_c(option = "viridis", guide = "none") +
       ggplot2::theme_bw() +
       ggplot2::theme(
@@ -124,7 +133,7 @@ corpairs=function(dt=demo,
     return(interp_dens)
   }
 
-  geompoint_density <- function(data, mapping, ...) {
+  geompoint_density <- function(data, mapping,geom.point.alpha=0.8, ...) {
     x_var_name <- rlang::as_label(mapping$x)
     y_var_name <- rlang::as_label(mapping$y)
 
@@ -141,9 +150,10 @@ corpairs=function(dt=demo,
     data$density <- density
 
     ggplot2::ggplot(data, mapping) +
-      ggplot2::geom_point(ggplot2::aes(color = density), alpha = 0.8, size = pointsize) +  # 动态大小
       ggplot2::geom_smooth(color=smooth.color,linewidth=smooth.width,method="lm",formula = y ~ x,se = TRUE, level = 0.95,alpha=0.8)+#
-      ggplot2::scale_color_viridis_c(option = pointcolor, guide = "none") +               # 动态调色板
+      ggplot2::geom_point(ggplot2::aes(color = density), alpha = geom.point.alpha, size = pointsize) +
+
+      ggplot2::scale_color_viridis_c(option = pointcolor, guide = "none") +
       ggplot2::theme_bw() +
       ggplot2::theme(
         plot.background = ggplot2::element_rect(fill = "white", color = "white"),
@@ -168,9 +178,9 @@ corpairs=function(dt=demo,
 
 
   #diag function
-  custom_densityDiag <- function(data, mapping,fill.color = "#26828E", ...) {
+  custom_densityDiag <- function(data, mapping,fill.color = "#26828E",density.alpha=0.8, ...) {
     ggplot2::ggplot(data = data, mapping = mapping) +
-      ggplot2::geom_density(alpha = 0.8, fill = fill.color, ...) +
+      ggplot2::geom_density(alpha = density.alpha, fill = fill.color, ...) +
       ggplot2::theme_minimal() +
       ggplot2::theme(
         plot.background = ggplot2::element_rect(fill = "white", color = "white"),
@@ -255,8 +265,10 @@ corpairs=function(dt=demo,
         }),
         lower = list(continuous = GGally::wrap(geomhex, binss = bin)),
         diag = list(continuous = function(data, mapping, ...) {
-          custom_densityDiag(data, mapping, fill.color = density.color) # density.color="red"
-        })
+          custom_densityDiag(data, mapping, fill.color = density.color,density.alpha=alpha.density) # density.color="red"
+        }),
+        switch=label.position,
+        axisLabels = sub.figure.label
       )
 
     },
@@ -277,10 +289,12 @@ corpairs=function(dt=demo,
             ggplot2::ggplot() + ggplot2::theme_void()
           }
         }),
-        lower = list(continuous = GGally::wrap(geompoint_density)),
+        lower = list(continuous = GGally::wrap(geompoint_density,geom.point.alpha=alpha.point)),
         diag = list(continuous = function(data, mapping, ...) {
-          custom_densityDiag(data, mapping, fill.color = density.color) # density.color="red"
-        })
+          custom_densityDiag(data, mapping, fill.color = density.color,density.alpha=alpha.density) # density.color="red"
+        }),
+        switch=label.position,
+        axisLabels = sub.figure.label
       )
 
 
