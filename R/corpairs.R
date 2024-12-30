@@ -88,9 +88,9 @@ corpairs=function(dt=demo,
   #hex function
   geomhex <- function(data, mapping,binss, ...) {
     ggplot2::ggplot(data = data, mapping = mapping) +
-      ggplot2::geom_smooth(color=smooth.color,linewidth=smooth.width,method="lm",formula = y ~ x,se = TRUE, level = 0.95)+#
-      ggplot2::geom_hex(bins = binss) +
 
+      ggplot2::geom_hex(bins = binss) +
+      ggplot2::geom_smooth(color=smooth.color,linewidth=smooth.width,method="lm",formula = y ~ x,se = TRUE, level = 0.95)+#
       ggplot2::scale_fill_viridis_c(option = "viridis", guide = "none") +
       ggplot2::theme_bw() +
       ggplot2::theme(
@@ -150,9 +150,9 @@ corpairs=function(dt=demo,
     data$density <- density
 
     ggplot2::ggplot(data, mapping) +
-      ggplot2::geom_smooth(color=smooth.color,linewidth=smooth.width,method="lm",formula = y ~ x,se = TRUE, level = 0.95,alpha=0.8)+#
-      ggplot2::geom_point(ggplot2::aes(color = density), alpha = geom.point.alpha, size = pointsize) +
 
+      ggplot2::geom_point(ggplot2::aes(color = density), alpha = geom.point.alpha, size = pointsize) +
+      ggplot2::geom_smooth(color=smooth.color,linewidth=smooth.width,method="lm",formula = y ~ x,se = TRUE, level = 0.95,alpha=0.8)+#
       ggplot2::scale_color_viridis_c(option = pointcolor, guide = "none") +
       ggplot2::theme_bw() +
       ggplot2::theme(
